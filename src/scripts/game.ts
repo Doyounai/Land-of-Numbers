@@ -14,7 +14,6 @@ var config = {
         width: DEFAULT_WIDTH,
         height: DEFAULT_HEIGHT
     },
-    scene: [PreloadScene, MainScene],
     physics: {
         default: 'arcade',
         arcade: {
@@ -24,15 +23,30 @@ var config = {
     }
 };
 
-window.addEventListener('load', () => {
-    // FBInstant.initializeAsync().then(function() {
+let game: Phaser.Game | null = null;
 
-    //     var config = {
-    //         type: Phaser.AUTO,
-    //         width: window.innerWidth,
-    //         height: window.innerHeight
-    //     };
+// window.addEventListener('load', () => {    
+    FBInstant.initializeAsync().then(function() {
+        // FBInstant.setLoadingProgress(100);
+
+        var config = {
+            type: Phaser.AUTO,
+            width: window.innerWidth,
+            height: window.innerHeight
+        };
     
-    // });
-    const game = new Phaser.Game(config);
-});
+        if(!game){
+            game = new Phaser.Game(config);
+
+            // add scene
+            game.scene.add('PreloadScene', PreloadScene);
+            game.scene.add('MainScene', MainScene);
+            
+            // start scene
+            game.scene.start('PreloadScene');
+
+        }
+    }).catch(function(error) {
+        console.log(error.message);
+      });
+// });
