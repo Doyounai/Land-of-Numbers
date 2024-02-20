@@ -1,5 +1,16 @@
-guide
-1. https://gamedevacademy.org/a-guide-to-using-the-facebook-instant-games-plugin-for-phaser-3-part-1-2/
-2. https://phaser.io/tutorials/getting-started-facebook-instant-games/
+## guide
+Setup Guide
+- https://gamedevacademy.org/a-guide-to-using-the-facebook-instant-games-plugin-for-phaser-3-part-1-2/
 
-console: https://developers.facebook.com/apps
+Phaser Guide
+- https://phaser.io/tutorials/getting-started-facebook-instant-games/
+  
+Facebook Guide
+- https://developers.facebook.com/docs/games/build/instant-games/reference/instant-games-sdk
+
+## Facebook Console Dashboard
+https://developers.facebook.com/apps
+
+## API && SDK DOCUMENTS
+FB Instant
+- https://developers.facebook.com/docs/games/build/instant-games/reference/instant-games-sdk
