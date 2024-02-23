@@ -14,3 +14,7 @@ https://developers.facebook.com/apps
 ## API && SDK DOCUMENTS
 FB Instant
 - https://developers.facebook.com/docs/games/build/instant-games/reference/instant-games-sdk
+
+
+## TESTING
+> Localhost URL : https://www.facebook.com/embed/instantgames/1104286117612903/player?game_url=https://localhost:8080

@@ -1,4 +1,5 @@
 import 'phaser';
+
 import PreloadScene from './scenes/preloadScene';
 import MainScene from './scenes/mainScene';
 
@@ -14,6 +15,7 @@ var config = {
         width: DEFAULT_WIDTH,
         height: DEFAULT_HEIGHT
     },
+    scene: [ PreloadScene, MainScene ],
     physics: {
         default: 'arcade',
         arcade: {
@@ -27,23 +29,17 @@ let game: Phaser.Game | null = null;
 
 // window.addEventListener('load', () => {    
     FBInstant.initializeAsync().then(function() {
-        // FBInstant.setLoadingProgress(100);
-
-        var config = {
-            type: Phaser.AUTO,
-            width: window.innerWidth,
-            height: window.innerHeight
-        };
+        FBInstant.setLoadingProgress(100);
     
         if(!game){
             game = new Phaser.Game(config);
 
             // add scene
-            game.scene.add('PreloadScene', PreloadScene);
-            game.scene.add('MainScene', MainScene);
+            // game.scene.add('PreloadScene', PreloadScene);
+            // game.scene.add('MainScene', MainScene);
             
             // start scene
-            game.scene.start('PreloadScene');
+            // game.scene.start('PreloadScene');
 
         }
     }).catch(function(error) {

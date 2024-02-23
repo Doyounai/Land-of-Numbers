@@ -1,13 +1,19 @@
+import "phaser/src/phaser.js";
+
 export default class PreloadScene extends Phaser.Scene{
     constructor(){
         super({key: 'PreloadScene'});
+
     }
 
     preload(){
-        console.log(FBInstant.player.getName());
+        // console.log(FBInstant.player.getName());
+        // console.log(FBInstant);
 
-        // FBInstant.once('startgame', this.create, this);
-        // FBInstant.showLoadProgress(this);
+        // console.log(this.facebook.playerName);
+
+        this.facebook.once('startgame', this.create, this);
+        this.facebook.showLoadProgress(this);
 
         this.load.image('rocket', 'assets/img/rocket.png');
 

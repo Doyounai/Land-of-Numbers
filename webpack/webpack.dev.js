@@ -12,11 +12,17 @@ const dev = {
     port: 8080,
     https: true
   },
+  // resolve: {
+  //   alias: {
+  //     phaser: "phaser/src/phaser.js"
+  //   }
+  // },
   plugins: [
     new webpack.DefinePlugin({
         'CANVAS_RENDERER': JSON.stringify(true),
         'WEBGL_RENDERER': JSON.stringify(true),
-        'PLUGIN_FBINSTANT': JSON.stringify(true)
+        'PLUGIN_FBINSTANT': JSON.stringify(true),
+        "typeof PLUGIN_FBINSTANT": JSON.stringify(true)
     })
 ]
 }
