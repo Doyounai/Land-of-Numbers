@@ -1,23 +1,38 @@
-import 'phaser';
+import "phaser";
 
-import PreloadScene from './scenes/preloadScene';
-import MainScene from './scenes/mainScene';
+import PreloadScene from "./scenes/preloadScene";
+import MainScene from "./scenes/mainScene";
 
-const DEFAULT_WIDTH = 1280;
-const DEFAULT_HEIGHT = 720;
 
-var config = {
+// aspect ratio fit width
+const getSize = () => {
+    const preferredWidth = 640;
+    const preferredHeight = 960;
+
+    const width = window.innerWidth;
+    let height = window.innerHeight;
+
+    const aspect = preferredWidth / preferredHeight;
+
+    const newWidth = width;
+    const newHeight = width / aspect;
+
+    height = height < newHeight ? height : newHeight;
+    return {width: newWidth, height: height};
+};
+
+const config = {
     type: Phaser.AUTO,
     backgroundColor: "#FFFFF0",
     scale: {
-        parent: 'phaser-game',
+        parent: "phaser-game",
         mode: Phaser.Scale.CENTER_BOTH,
-        width: DEFAULT_WIDTH,
-        height: DEFAULT_HEIGHT
+        width: getSize().width,
+        height: getSize().height
     },
     scene: [ PreloadScene, MainScene ],
     physics: {
-        default: 'arcade',
+        default: "arcade",
         arcade: {
             debug: true,
             gravity: {y: 10}
@@ -27,22 +42,13 @@ var config = {
 
 let game: Phaser.Game | null = null;
 
-// window.addEventListener('load', () => {    
-    FBInstant.initializeAsync().then(function() {
-        FBInstant.setLoadingProgress(100);
+FBInstant.initializeAsync().then(function() {
+    FBInstant.setLoadingProgress(100);
     
-        if(!game){
-            game = new Phaser.Game(config);
+    if(!game){
+        game = new Phaser.Game(config);
 
-            // add scene
-            // game.scene.add('PreloadScene', PreloadScene);
-            // game.scene.add('MainScene', MainScene);
-            
-            // start scene
-            // game.scene.start('PreloadScene');
-
-        }
-    }).catch(function(error) {
-        console.log(error.message);
-      });
-// });
+    }
+}).catch(function(error) {
+    console.log(error.message);
+});
