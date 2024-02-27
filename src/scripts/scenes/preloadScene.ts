@@ -7,7 +7,7 @@ export default class PreloadScene extends Phaser.Scene{
     }
 
     preload(){
-        this.facebook.once("startgame", this.create, this);
+        this.facebook.once("startgame", this.startGame, this);
         this.facebook.showLoadProgress(this);
 
         this.load.image("rocket", "assets/img/rocket.png");
@@ -18,7 +18,7 @@ export default class PreloadScene extends Phaser.Scene{
         });
     }
 
-    create(){
+    startGame(){
         this.scene.start("MainScene");
 
         console.log("Pre load successful");

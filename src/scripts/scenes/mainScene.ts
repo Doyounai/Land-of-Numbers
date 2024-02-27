@@ -9,9 +9,11 @@ export default class MainScene extends Phaser.Scene{
     score = 0;
     bestScore = 2048;
 
-    boardContainer: Phaser.GameObjects.Container | null = null;
+    // boardContainer: Phaser.GameObjects.Container | null = null;
+    boardContainer: any | null = null;
     scoreText: Phaser.GameObjects.Text | null = null;
     bestScoreText: Phaser.GameObjects.Text | null = null;
+    isGameOver = false;
 
     constructor(){
         super({key: "MainScene"});
@@ -79,8 +81,166 @@ export default class MainScene extends Phaser.Scene{
 
         // start game oparator
         this.createRandom2or4();
-        this.updateBoard();
+        this.updateBoard(); 
+
+        this.input.keyboard.on("keydown", (event) => {
+            if(this.isGameOver){
+                return;
+            }
+
+            const { keyCode } = event;
+
+            switch (keyCode) {
+            case 37:
+                // moveLeft
+                this.moveLeft();
+                break;
+            case 38:
+                // moveUp
+                this.moveUp();
+                break; 
+            case 39:
+                // moveRight
+                this.moveRight();
+                break;
+            case 40:
+                // move down
+                this.moveDown();
+                break;
+            }
+
+            if(keyCode >= 37 && keyCode <= 40){
+                this.createRandom2or4();
+                this.updateBoard();
+            }
+        });
     };
+
+    //#region move function
+    moveLeft = () => {
+        for (let i = 0; i < GRID_SIZE; i++){
+            for(let j = 0; j < GRID_SIZE; j++){
+                if(this.board[i][j] !== 0){
+                    let currentplace = j;
+
+                    for(let k = j - 1; k >= 0; k--){
+                        if(currentplace - 1 !== k){
+                            break;
+                        }
+
+                        if(this.board[i][k] === 0){
+                            this.board[i][k] = this.board[i][currentplace];
+                            this.board[i][currentplace] = 0;
+
+                            const tile = this.boardContainer?.getByName("tile-" + i + "-" + currentplace);
+                            tile?.setName("tile-" + i + "-" + k);
+
+                            this.tweens.add({
+                                targets: tile,
+                                x: k * (TILE_SIZE + GAP) + TILE_SIZE / 2 - (TILE_SIZE * GRID_SIZE / 2 + GAP),
+                                duration: 50,
+                                ease: "Cubic.easeOut"
+                            });
+
+                            currentplace = k;
+
+                        }else if(this.board[i][k] === this.board[i][currentplace]){
+                            this.board[i][k] *= 2;
+                            this.board[i][currentplace] = 0;
+
+                            const tile = this.boardContainer?.getByName("tile-" + i + "-" + currentplace);
+                            tile?.setName("tile-" + i + "-" + k);
+
+                            const tile2 = this.boardContainer?.getByName("tile-" + i + "-" + k);
+                            this.tweens.add({
+                                targets: tile,
+                                x: k * (TILE_SIZE + GAP) + TILE_SIZE / 2 - (TILE_SIZE * GRID_SIZE / 2 + GAP),
+                                duration: 50,
+                                ease: "Cubic.easeOut",
+                                onComplete: () => {
+                                    tile2?.destroy();
+                                    this.boardContainer?.remove(tile2);
+
+                                    tile.getAt(0).setFillStyle(this.getBackgroundColor(this.board[i][k]));
+                                    tile.getAt(1).setText(this.board[i][k]);
+                                    tile.getAt(1).setColor(this.getTextColor(this.board[i][k]));
+                                }
+                            });
+
+                            break;
+                        }
+                    }
+                }
+            } 
+        }
+    };
+
+    moveRight = () => {
+        for (let i = 0; i < GRID_SIZE; i++){
+            for(let j = GRID_SIZE - 2; j >= 0; j--){
+                if(this.board[i][j] !== 0){
+                    let currentplace = j;
+
+                    for(let k = j + 1; k < GRID_SIZE; k++){
+                        if(currentplace + 1 !== k){
+                            break;
+                        }
+
+                        if(this.board[i][k] === 0){
+                            this.board[i][k] = this.board[i][currentplace];
+                            this.board[i][currentplace] = 0;
+
+                            const tile = this.boardContainer?.getByName("tile-" + i + "-" + currentplace);
+                            tile?.setName("tile-" + i + "-" + k);
+
+                            this.tweens.add({
+                                targets: tile,
+                                x: k * (TILE_SIZE + GAP) + TILE_SIZE / 2 - (TILE_SIZE * GRID_SIZE / 2 + GAP),
+                                duration: 50,
+                                ease: "Cubic.easeOut"
+                            });
+
+                            currentplace = k;
+
+                        }else if(this.board[i][k] === this.board[i][currentplace]){
+                            this.board[i][k] *= 2;
+                            this.board[i][currentplace] = 0;
+
+                            const tile = this.boardContainer?.getByName("tile-" + i + "-" + currentplace);
+                            tile?.setName("tile-" + i + "-" + k);
+
+                            const tile2 = this.boardContainer?.getByName("tile-" + i + "-" + k);
+                            this.tweens.add({
+                                targets: tile,
+                                x: k * (TILE_SIZE + GAP) + TILE_SIZE / 2 - (TILE_SIZE * GRID_SIZE / 2 + GAP),
+                                duration: 50,
+                                ease: "Cubic.easeOut",
+                                onComplete: () => {
+                                    tile2?.destroy();
+                                    this.boardContainer?.remove(tile2);
+
+                                    tile.getAt(0).setFillStyle(this.getBackgroundColor(this.board[i][k]));
+                                    tile.getAt(1).setText(this.board[i][k]);
+                                    tile.getAt(1).setColor(this.getTextColor(this.board[i][k]));
+                                }
+                            });
+
+                            break;
+                        }
+                    }
+                }
+            } 
+        }
+    };
+
+    moveUp = () => {
+        console.log("up");
+    };
+
+    moveDown = () => {
+        console.log("down");
+    };
+    //#endregion
 
     getBackgroundColor = (value: number) => {
         switch (value){
@@ -130,17 +290,27 @@ export default class MainScene extends Phaser.Scene{
         });
         tileText.setOrigin(0.5, 0.5);
         tileContainer.add([tileBg, tileText]);
-        tileContainer.setName("tile-${i}-${j}");
+        tileContainer.setName("tile-" + i + "-" + j);
         this.boardContainer?.add(tileContainer);
+
+        return tileContainer;
     };
 
     updateBoard = () => {
         for(let i = 0; i < GRID_SIZE; i++){
             for(let j = 0; j < GRID_SIZE; j++){
                 if(this.board[i][j] !== 0){
-                    const tile = this.boardContainer?.getByName("tile-${t}-${j}");
+                    const tile = this.boardContainer?.getByName("tile-" + i + "-" + j);
                     if(!tile){
-                        this.createTile(i, j);
+                        const tileContainer = this.createTile(i, j);
+                        tileContainer.setScale(0.5);
+
+                        this.tweens.add({
+                            targets: tileContainer,
+                            scale: 1,
+                            duration: 100,
+                            ease: "Cubic.easeOut"
+                        });
                     }
                 }
             }
@@ -181,6 +351,12 @@ export default class MainScene extends Phaser.Scene{
                     });
                 }
             }
+        }
+
+        if(emtryTiles.length === 0){
+            console.log("game over!!");
+            this.isGameOver = true;
+            return;
         }
 
         const chosenTile = Phaser.Utils.Array.GetRandom(emtryTiles);
