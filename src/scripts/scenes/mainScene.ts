@@ -7,7 +7,7 @@ export default class MainScene extends Phaser.Scene{
     
     board: any[] = [];
     score = 0;
-    bestScore = 2048;
+    bestScore = 0;
 
     // boardContainer: Phaser.GameObjects.Container | null = null;
     boardContainer: any | null = null;

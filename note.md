@@ -16,6 +16,10 @@ Phaser 3 2048
 
 - https://www.youtube.com/watch?v=Hhui9dZH-cY&t=3009s
 
+Leader Board
+
+- https://phaser.io/tutorials/facebook-instant-games-leaderboards/index
+
 ## Facebook Console Dashboard
 
 https://developers.facebook.com/apps

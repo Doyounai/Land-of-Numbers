@@ -1,30 +1,480 @@
-const { merge } = require('webpack-merge')
-const common = require('./webpack.common')
+const { merge } = require("webpack-merge");
 
-const webpack = require('webpack');
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+const common = require("./webpack.common");
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+const webpack = require("webpack");
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 const dev = {
-  mode: 'development',
-  stats: 'errors-warnings',
-  devtool: 'eval',
-  devServer: {
-    compress: true,
-    port: 8080,
-    https: true
-  },
-  // resolve: {
-  //   alias: {
-  //     phaser: "phaser/src/phaser.js"
-  //   }
-  // },
-  plugins: [
-    new webpack.DefinePlugin({
-        'CANVAS_RENDERER': JSON.stringify(true),
-        'WEBGL_RENDERER': JSON.stringify(true),
-        'PLUGIN_FBINSTANT': JSON.stringify(true),
-        "typeof PLUGIN_FBINSTANT": JSON.stringify(true)
-    })
-]
-}
 
-module.exports = merge(common, dev)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    mode: "development",
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    stats: "errors-warnings",
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    devtool: "eval",
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    devServer: {
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        compress: true,
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        port: 8080,
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        https: true
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    },
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // resolve: {
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    //   alias: {
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    //     phaser: "phaser/src/phaser.js"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    //   }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // },
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    plugins: [
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        new webpack.DefinePlugin({
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            "CANVAS_RENDERER": JSON.stringify(true),
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            "WEBGL_RENDERER": JSON.stringify(true),
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            "PLUGIN_FBINSTANT": JSON.stringify(true),
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            "typeof PLUGIN_FBINSTANT": JSON.stringify(true)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        })
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    ]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+module.exports = merge(common, dev);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
