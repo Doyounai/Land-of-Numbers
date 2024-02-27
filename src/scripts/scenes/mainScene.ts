@@ -83,8 +83,9 @@ export default class MainScene extends Phaser.Scene{
         this.createRandom2or4();
         this.updateBoard(); 
 
+        let canPressKey = true;
         this.input.keyboard.on("keydown", (event) => {
-            if(this.isGameOver){
+            if(this.isGameOver || ! canPressKey){
                 return;
             }
 
@@ -110,8 +111,18 @@ export default class MainScene extends Phaser.Scene{
             }
 
             if(keyCode >= 37 && keyCode <= 40){
-                this.createRandom2or4();
-                this.updateBoard();
+                canPressKey = false;
+
+                this.time.addEvent({
+                    delay: 100,
+                    callback: () => {
+                        this.createRandom2or4();
+                        this.updateBoard();
+                        canPressKey = true;
+                    },
+                    callbackScope: this,
+                });
+
             }
         });
     };
@@ -137,7 +148,7 @@ export default class MainScene extends Phaser.Scene{
 
                             this.tweens.add({
                                 targets: tile,
-                                x: k * (TILE_SIZE + GAP) + TILE_SIZE / 2 - (TILE_SIZE * GRID_SIZE / 2 + GAP),
+                                x: k * (TILE_SIZE + GAP) + TILE_SIZE / 2 - (TILE_SIZE * GRID_SIZE / 2 + GAP * 1.5),
                                 duration: 50,
                                 ease: "Cubic.easeOut"
                             });
@@ -149,17 +160,20 @@ export default class MainScene extends Phaser.Scene{
                             this.board[i][currentplace] = 0;
 
                             const tile = this.boardContainer?.getByName("tile-" + i + "-" + currentplace);
+                            const tile2 = this.boardContainer?.getByName("tile-" + i + "-" + k);
+                            tile2?.destroy();
+                            this.boardContainer?.remove(tile2);
                             tile?.setName("tile-" + i + "-" + k);
 
-                            const tile2 = this.boardContainer?.getByName("tile-" + i + "-" + k);
                             this.tweens.add({
                                 targets: tile,
-                                x: k * (TILE_SIZE + GAP) + TILE_SIZE / 2 - (TILE_SIZE * GRID_SIZE / 2 + GAP),
+                                x: k * (TILE_SIZE + GAP) + TILE_SIZE / 2 - (TILE_SIZE * GRID_SIZE / 2 + GAP * 1.5),
                                 duration: 50,
                                 ease: "Cubic.easeOut",
                                 onComplete: () => {
-                                    tile2?.destroy();
-                                    this.boardContainer?.remove(tile2);
+                                    if(!tile || (tile && !tile.active)){
+                                        return;
+                                    }
 
                                     tile.getAt(0).setFillStyle(this.getBackgroundColor(this.board[i][k]));
                                     tile.getAt(1).setText(this.board[i][k]);
@@ -195,7 +209,7 @@ export default class MainScene extends Phaser.Scene{
 
                             this.tweens.add({
                                 targets: tile,
-                                x: k * (TILE_SIZE + GAP) + TILE_SIZE / 2 - (TILE_SIZE * GRID_SIZE / 2 + GAP),
+                                x: k * (TILE_SIZE + GAP) + TILE_SIZE / 2 - (TILE_SIZE * GRID_SIZE / 2 + GAP * 1.5),
                                 duration: 50,
                                 ease: "Cubic.easeOut"
                             });
@@ -207,17 +221,20 @@ export default class MainScene extends Phaser.Scene{
                             this.board[i][currentplace] = 0;
 
                             const tile = this.boardContainer?.getByName("tile-" + i + "-" + currentplace);
+                            const tile2 = this.boardContainer?.getByName("tile-" + i + "-" + k);
+                            tile2?.destroy();
+                            this.boardContainer?.remove(tile2);
                             tile?.setName("tile-" + i + "-" + k);
 
-                            const tile2 = this.boardContainer?.getByName("tile-" + i + "-" + k);
                             this.tweens.add({
                                 targets: tile,
-                                x: k * (TILE_SIZE + GAP) + TILE_SIZE / 2 - (TILE_SIZE * GRID_SIZE / 2 + GAP),
+                                x: k * (TILE_SIZE + GAP) + TILE_SIZE / 2 - (TILE_SIZE * GRID_SIZE / 2 + GAP * 1.5),
                                 duration: 50,
                                 ease: "Cubic.easeOut",
                                 onComplete: () => {
-                                    tile2?.destroy();
-                                    this.boardContainer?.remove(tile2);
+                                    if(!tile || (tile && !tile.active)){
+                                        return;
+                                    }
 
                                     tile.getAt(0).setFillStyle(this.getBackgroundColor(this.board[i][k]));
                                     tile.getAt(1).setText(this.board[i][k]);
@@ -234,11 +251,125 @@ export default class MainScene extends Phaser.Scene{
     };
 
     moveUp = () => {
-        console.log("up");
+        for (let j = 0; j < GRID_SIZE; j++){
+            for(let i = 1; i < GRID_SIZE; i++){
+                if(this.board[i][j] !== 0){
+                    let currentplace = i;
+
+                    for(let k = i - 1; k >= 0; k--){
+                        if(currentplace - 1 !== k){
+                            break;
+                        }
+
+                        if(this.board[k][j] === 0){
+                            this.board[k][j] = this.board[currentplace][j];
+                            this.board[currentplace][j] = 0;
+
+                            const tile = this.boardContainer?.getByName("tile-" + currentplace + "-" + j);
+                            tile?.setName("tile-" + k + "-" + j);
+
+                            this.tweens.add({
+                                targets: tile,
+                                y: k * (TILE_SIZE + GAP) + TILE_SIZE / 2 - (TILE_SIZE * GRID_SIZE / 2 + GAP * 1.5),
+                                duration: 50,
+                                ease: "Cubic.easeOut"
+                            });
+
+                            currentplace = k;
+
+                        }else if(this.board[k][j] === this.board[currentplace][j]){
+                            this.board[k][j] *= 2;
+                            this.board[currentplace][j] = 0;
+
+                            const tile = this.boardContainer?.getByName("tile-" + currentplace + "-" + j);
+                            const tile2 = this.boardContainer?.getByName("tile-" + k + "-" + j);
+                            tile2?.destroy();
+                            this.boardContainer?.remove(tile2);
+                            tile?.setName("tile-" + k + "-" + j);
+
+                            this.tweens.add({
+                                targets: tile,
+                                y: k * (TILE_SIZE + GAP) + TILE_SIZE / 2 - (TILE_SIZE * GRID_SIZE / 2 + GAP * 1.5),
+                                duration: 50,
+                                ease: "Cubic.easeOut",
+                                onComplete: () => {
+                                    if(!tile || (tile && !tile.active)){
+                                        return;
+                                    }
+
+                                    tile.getAt(0).setFillStyle(this.getBackgroundColor(this.board[k][j]));
+                                    tile.getAt(1).setText(this.board[k][j]);
+                                    tile.getAt(1).setColor(this.getTextColor(this.board[k][j]));
+                                }
+                            });
+
+                            break;
+                        }
+                    }
+                }
+            } 
+        }
     };
 
     moveDown = () => {
-        console.log("down");
+        for (let j = 0; j < GRID_SIZE; j++){
+            for(let i = GRID_SIZE - 2; i >= 0; i--){
+                if(this.board[i][j] !== 0){
+                    let currentplace = i;
+
+                    for(let k = i + 1; k < GRID_SIZE; k++){
+                        if(currentplace + 1 !== k){
+                            break;
+                        }
+
+                        if(this.board[k][j] === 0){
+                            this.board[k][j] = this.board[currentplace][j];
+                            this.board[currentplace][j] = 0;
+
+                            const tile = this.boardContainer?.getByName("tile-" + currentplace + "-" + j);
+                            tile?.setName("tile-" + k + "-" + j);
+
+                            this.tweens.add({
+                                targets: tile,
+                                y: k * (TILE_SIZE + GAP) + TILE_SIZE / 2 - (TILE_SIZE * GRID_SIZE / 2 + GAP * 1.5),
+                                duration: 50,
+                                ease: "Cubic.easeOut"
+                            });
+
+                            currentplace = k;
+
+                        }else if(this.board[k][j] === this.board[currentplace][j]){
+                            this.board[k][j] *= 2;
+                            this.board[currentplace][j] = 0;
+
+                            const tile = this.boardContainer?.getByName("tile-" + currentplace + "-" + j);
+                            const tile2 = this.boardContainer?.getByName("tile-" + k + "-" + j);
+                            tile2?.destroy();
+                            this.boardContainer?.remove(tile2);
+                            tile?.setName("tile-" + k + "-" + j);
+
+                            this.tweens.add({
+                                targets: tile,
+                                y: k * (TILE_SIZE + GAP) + TILE_SIZE / 2 - (TILE_SIZE * GRID_SIZE / 2 + GAP * 1.5),
+                                duration: 50,
+                                ease: "Cubic.easeOut",
+                                onComplete: () => {
+                                    if(!tile || (tile && !tile.active)){
+                                        return;
+                                    }
+
+                                    tile.getAt(0).setFillStyle(this.getBackgroundColor(this.board[k][j]));
+                                    tile.getAt(1).setText(this.board[k][j]);
+                                    tile.getAt(1).setColor(this.getTextColor(this.board[k][j]));
+                                }
+                            });
+
+                            break;
+                        }
+                    }
+                }
+            } 
+        }
     };
     //#endregion
 
