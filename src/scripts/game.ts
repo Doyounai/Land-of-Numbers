@@ -9,21 +9,33 @@ const getSize = () => {
     const preferredWidth = 640;
     const preferredHeight = 960;
 
-    const width = window.innerWidth;
-    let height = window.innerHeight;
+    const gameContainer = document.getElementById("game-container");
+
+    if(!gameContainer){
+        return {width: preferredWidth, height: preferredHeight};
+    }
+
+    let width = gameContainer.clientWidth;
+    const height = gameContainer.clientHeight;
 
     const aspect = preferredWidth / preferredHeight;
 
-    const newWidth = width;
-    const newHeight = width / aspect;
+    const newWidth = height / aspect;
+    const newHeight = height;
 
-    height = height < newHeight ? height : newHeight;
-    return {width: newWidth, height: height};
+    width = newWidth > width ? width : newWidth;
+
+    console.log(width);
+    console.log(newWidth);
+
+    console.log(width);
+
+    return {width: width, height: newHeight};
 };
 
-const config = {
+const config = { 
     type: Phaser.AUTO,
-    backgroundColor: "#FFFFF0",
+    backgroundColor: "#78A083",
     scale: {
         parent: "phaser-game",
         mode: Phaser.Scale.CENTER_BOTH,

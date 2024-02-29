@@ -1,3 +1,5 @@
+import ProgressBar from "../objects/progressBar";
+
 // Board Config
 const GRID_SIZE = 4;
 const TILE_SIZE = 70;
@@ -20,9 +22,59 @@ export default class MainScene extends Phaser.Scene{
 
     }
 
+    preload = () => {
+        // // set high score -----------------------------------
+        // this.facebook.on("getstats", (data) => {
+        //     console.log("--------------------------------------");
+        //     console.log(data);
+        // });
+        
+        // this.facebook.on("getstatsfail", (error) => {
+        //     console.log("--------------------------------------");
+        //     console.log(error);
+        // });
+        
+        FBInstant.player.getDataAsync(["score"]).then((res) => {
+            console.log(res);
+            if(res.score != null){
+                // console.log("Have Score");
+                this.bestScore = res.score;
+                if(this.bestScoreText) {
+                    this.bestScoreText?.setText(this.bestScore.toString());
+                }
+            }
+        }).catch((error) => {
+            console.log("eroorrrrrr");
+            console.log(error);
+        });
+
+    };
+
+    reset = () => {
+        this.score = 0;
+        this.isGameOver = false;
+        // // start game oparator
+        
+        // this.initBoard();
+        // this.createRandom2or4();
+        // this.updateBoard(); 
+        this.canPressKey = true;
+        this.scene.start("MainScene");
+    };
+
     create = () => {
+        const bg = this.add.sprite(0, 0, "gamebg");
+        bg.setOrigin(0, 0);
+
+        bg.setScale(2);
+
+        // const newWidth = this.game.canvas.width;
+        // const newHeight = (this.game.canvas.width - bg.width) + bg.height;
+
+        // bg.setSize(newWidth, newHeight);
+
         // score ---------------------------------------------
-        const scoreContainer = this.add.container(100, 50);
+        const scoreContainer = this.add.container(150 / 2 + 10, 50);
         const scoreBg = this.add.rectangle(0, 0, 150, 75, 0xbbada0);
 
         const scoreHeading = this.add.text(0, -20, "score", {
@@ -40,7 +92,7 @@ export default class MainScene extends Phaser.Scene{
         scoreContainer.add([scoreBg, scoreHeading, this.scoreText]);
 
         // best score ---------------------------------------------
-        const bestScoreContainer = this.add.container(280, 50);
+        const bestScoreContainer = this.add.container(this.game.canvas.width - 150 / 2 - 10, 50);
         const bestScoreBg = this.add.rectangle(0, 0, 150, 75, 0xbbada0);
 
         const bestScoreHeading = this.add.text(0, -20, "bestScore", {
@@ -57,11 +109,24 @@ export default class MainScene extends Phaser.Scene{
 
         bestScoreContainer.add([bestScoreBg, bestScoreHeading, this.bestScoreText]);
 
+        // reset button 
+        const resetText = this.add.text(0, 10, "Reset", {
+            font: "bold 24px sans-serif",
+            color: "#ffffff"
+        });
+        resetText.setOrigin(0.5, 0.5);
+        const resetButtonBG = this.add.rectangle(0, 0, 150, 75, 0xbbada0);
+        resetButtonBG.setInteractive();
+        resetButtonBG.on("pointerdown", this.reset);
+
+        const resetContainer = this.add.container(150 / 2 + 10, 140);
+        resetContainer.add([resetButtonBG, resetText]);
+
         // boar init
         this.initBoard();
         const boardSize = (TILE_SIZE * GRID_SIZE) + GAP * (GRID_SIZE - 1);
 
-        this.boardContainer = this.add.container(this.game.canvas.width / 2, 400);
+        this.boardContainer = this.add.container(this.game.canvas.width / 2, this.game.canvas.height - boardSize / 2);
         const boardBG = this.add.rectangle(0, 0, boardSize, boardSize, 0xbbada0);
         this.boardContainer.add(boardBG);
 
@@ -79,13 +144,13 @@ export default class MainScene extends Phaser.Scene{
             }
         }
 
-        // start game oparator
+        // // start game oparator
         this.createRandom2or4();
         this.updateBoard(); 
 
-        let canPressKey = true;
+        // let canPressKey = true;
         this.input.keyboard.on("keydown", (event) => {
-            if(this.isGameOver || ! canPressKey){
+            if(this.isGameOver || ! this.canPressKey){
                 return;
             }
 
@@ -111,20 +176,72 @@ export default class MainScene extends Phaser.Scene{
             }
 
             if(keyCode >= 37 && keyCode <= 40){
-                canPressKey = false;
+                this.canPressKey = false;
 
                 this.time.addEvent({
                     delay: 100,
                     callback: () => {
                         this.createRandom2or4();
                         this.updateBoard();
-                        canPressKey = true;
+                        this.canPressKey = true;
+
+                        if(this.getEmtryTiles().length === 0){
+                            this.gameOver(boardSize);
+                            this.canPressKey = false;
+                            return;
+                        }
                     },
                     callbackScope: this,
                 });
 
             }
         });
+
+        this.progressBar = new ProgressBar(this, 0, this.game.canvas.height / 2, 150, 35);
+    };
+
+    progressBar: ProgressBar;
+    canPressKey = true;
+
+    gameOver = (boardSize: number) => {
+        console.log("game over!!");
+        this.isGameOver = true;
+
+        FBInstant.player.setDataAsync({
+            score: this.bestScore,
+        }).then((res) => {
+            console.log(res);
+            console.log("set hight scoreeeeee");
+        }).catch((error) => {
+            console.log("save score erorrrrrrrr");
+            console.log(error);
+        }); 
+
+        const loseBG = this.add.rectangle(
+            // this.game.canvas.width / 2, 
+            // this.game.canvas.height - boardSize / 2, 
+            0,
+            0,
+            boardSize, 
+            boardSize, 
+            0xbbada0
+        );
+        loseBG.setInteractive();
+        loseBG.on("pointerdown", this.reset);
+
+        const loseText = this.add.text(0, 0, "You LOSE!!", {
+            font: "bold 28px sans-serif",
+            color: "#ffffff"
+        });
+        loseText.setOrigin(0.5, 0.5);
+        const loseText2 = this.add.text(0, 30, "Press HERE to reset.", {
+            font: "bold 28px sans-serif",
+            color: "#ffffff"
+        });
+        loseText2.setOrigin(0.5, 0.5);
+
+        const loseContainer = this.add.container(this.game.canvas.width / 2, this.game.canvas.height - boardSize / 2);
+        loseContainer.add([loseBG, loseText, loseText2]);
     };
 
     //#region move function
@@ -448,8 +565,6 @@ export default class MainScene extends Phaser.Scene{
         }
 
         this.updateScore();
-
-        console.log(this.board);
     };
 
     updateScore = () => {
@@ -464,13 +579,21 @@ export default class MainScene extends Phaser.Scene{
 
         if(this.score > this.bestScore){
             this.bestScore = this.score;
+
+            // FBInstant.player.setDataAsync({
+            //     score: this.bestScore,
+            // }).then((res) => {
+            //     console.log(res);
+            // }).catch((error) => {
+            //     console.log(error);
+            // }); 
         }
 
         this.scoreText?.setText(this.score.toString());
         this.bestScoreText?.setText(this.bestScore.toString());
     };
 
-    createRandom2or4 = () => {
+    getEmtryTiles = (): {x: number, y: number}[] => {
         const emtryTiles: {x: number, y: number}[] = [];
 
         for(let i = 0; i < GRID_SIZE; i++){
@@ -484,13 +607,17 @@ export default class MainScene extends Phaser.Scene{
             }
         }
 
-        if(emtryTiles.length === 0){
-            console.log("game over!!");
+        return emtryTiles;
+    };
+
+    createRandom2or4 = () => {
+        if(this.getEmtryTiles().length === 0){
+            // console.log("game over!!");
             this.isGameOver = true;
             return;
         }
 
-        const chosenTile = Phaser.Utils.Array.GetRandom(emtryTiles);
+        const chosenTile = Phaser.Utils.Array.GetRandom(this.getEmtryTiles());
         this.board[chosenTile.x][chosenTile.y] = Phaser.Math.Between(1, 2) * 2;
     };
 
