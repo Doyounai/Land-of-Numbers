@@ -25,11 +25,6 @@ const getSize = () => {
 
     width = newWidth > width ? width : newWidth;
 
-    console.log(width);
-    console.log(newWidth);
-
-    console.log(width);
-
     return {width: width, height: newHeight};
 };
 
@@ -64,3 +59,5 @@ FBInstant.initializeAsync().then(function() {
 }).catch(function(error) {
     console.log(error.message);
 });
+
+// game = new Phaser.Game(config);

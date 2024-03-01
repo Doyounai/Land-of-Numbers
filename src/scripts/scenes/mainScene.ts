@@ -1,4 +1,4 @@
-import ProgressBar from "../objects/progressBar";
+import { Math } from "phaser";
 
 // Board Config
 const GRID_SIZE = 4;
@@ -186,7 +186,7 @@ export default class MainScene extends Phaser.Scene{
                         this.canPressKey = true;
 
                         if(this.getEmtryTiles().length === 0){
-                            this.gameOver(boardSize);
+                            this.gameOver();
                             this.canPressKey = false;
                             return;
                         }
@@ -197,13 +197,35 @@ export default class MainScene extends Phaser.Scene{
             }
         });
 
-        this.progressBar = new ProgressBar(this, 0, this.game.canvas.height / 2, 150, 35);
+        // this.progressBar = new ProgressBar(this, 0, this.game.canvas.height / 2, 150, 35);
+
+        // progress bar
+        const progressWidth = this.game.canvas.width - 20;
+        const progressHeight = 40;
+
+        const progressContainer = this.add.container(progressWidth / 2 + 10, this.game.canvas.height / 2 - 20);
+        const progressBG = this.add.rectangle(0, 0, progressWidth, progressHeight, 0x2b2824);
+        this.progressBar = this.add.rectangle(-(progressWidth / 2), -(progressHeight / 2), progressWidth, progressHeight, 0xffbb61);
+        this.progressBar.setOrigin(0, 0);
+
+        progressContainer.add([progressBG, this.progressBar]);
+        this.updateProgressBar();
     };
 
-    progressBar: ProgressBar;
+    progressBar: Phaser.GameObjects.Rectangle;
+
+    timeMax = 10;
+    timeCountDown = 10;
+
     canPressKey = true;
 
-    gameOver = (boardSize: number) => {
+    updateProgressBar = () => {
+        this.progressBar.setScale(this.timeCountDown * (1 / this.timeMax), this.progressBar.scaleY);
+    };
+
+    gameOver = () => {
+        const boardSize = (TILE_SIZE * GRID_SIZE) + GAP * (GRID_SIZE - 1);
+
         console.log("game over!!");
         this.isGameOver = true;
 
@@ -564,6 +586,8 @@ export default class MainScene extends Phaser.Scene{
             }
         }
 
+        this.timeCountDown = Math.Clamp(this.timeCountDown + 0.25, 0, this.timeMax);
+
         this.updateScore();
     };
 
@@ -629,4 +653,16 @@ export default class MainScene extends Phaser.Scene{
             }
         }
     };
+
+    update(time: number, delta: number): void {
+        if(!this.isGameOver){
+            // console.log(delta);
+            this.timeCountDown -= delta / 1000;
+            this.updateProgressBar();
+
+            if(this.timeCountDown <= 0){
+                this.gameOver();
+            }
+        }
+    }
 }

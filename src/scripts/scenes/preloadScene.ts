@@ -7,25 +7,27 @@ export default class PreloadScene extends Phaser.Scene{
     }
 
     preload(){
-        this.facebook.once("startgame", this.startGame, this);
-        this.facebook.showLoadProgress(this);
-
+        // this.facebook.once("startgame", this.startGame, this);
+        
         this.load.image("rocket", "assets/img/rocket.png");
         this.load.image("tile", "assets/tile.png");
-
+        
         this.load.image("gamebg", "assets/gameBG.png");
-
+        
+        this.facebook.showLoadProgress(this);
         this.load.on("progress", (val) => {
             FBInstant.setLoadingProgress(val * 100);
         });
+
+        this.facebook.once("startgame", this.create, this);
     }
 
     startButtonContainer: Phaser.GameObjects.Container;
 
-    startGame(){
-        // this.scene.start("MainScene");
-
+    create(){
         // console.log("Pre load successful");
+        console.log("Innnnnn");
+
         const centerWidth = this.game.canvas.width / 2;
         const centerHeight = this.game.canvas.height / 2;
 
@@ -43,7 +45,7 @@ export default class PreloadScene extends Phaser.Scene{
         startBg.setInteractive();
 
         startBg.on("pointerdown", () => {
-            console.log("sstartButtonClick");
+            console.log("startButtonClick");
             this.scene.start("MainScene");
         });
 

@@ -1,4 +1,4 @@
-export default class ProgressBar extends Phaser.GameObjects.Container{
+export default class ProgressBar extends Phaser.GameObjects.GameObject{
     width = 0;
     height = 0;
 
@@ -6,23 +6,23 @@ export default class ProgressBar extends Phaser.GameObjects.Container{
 
     scene: any;
 
+    progresseContainer: Phaser.GameObjects.Container;
+
     constructor(scene, x, y, width, height){
-        super(scene, x, y);
+        super(x, y);
 
         this.scene = scene;
 
         this.width = width;
         this.height = height;
-
     }
     
     create(){
+        this.progresseContainer = this.scene.add.container(0, this.scene.game.canvas.height / 2);
+
         const progresseBG = this.scene.add.rectangle(0, 0, this.width, this.height, 0xbbada0);
         this.progressBar = this.scene.add.rectangle(0, 0, this.width, this.height, 0xbbada0);
 
-        this.add([progresseBG, this.progressBar]);
+        this.progresseContainer.add([progresseBG, this.progressBar]);
     }
-    // addObjects = (obj) => {
-    //     this.add(obj);
-    // };
 }
