@@ -13,6 +13,11 @@ export default class PreloadScene extends Phaser.Scene{
         this.load.image("tile", "assets/tile.png");
         
         this.load.image("gamebg", "assets/gameBG.png");
+
+        this.load.spritesheet("slime", "assets/slime.png", {
+            frameWidth: 32,
+            frameHeight: 32
+        });
         
         this.facebook.showLoadProgress(this);
         this.load.on("progress", (val) => {
@@ -25,6 +30,21 @@ export default class PreloadScene extends Phaser.Scene{
     startButtonContainer: Phaser.GameObjects.Container;
 
     create(){
+        const bg = this.add.sprite(0, 0, "gamebg");
+        bg.setOrigin(0, 0);
+
+        bg.setScale(2);
+
+        this.anims.create({
+            key: "slimeIdle",
+            frames: this.anims.generateFrameNumbers("slime", {}),
+            frameRate: 16,
+            repeat: -1
+        });
+        const Slime = this.add.sprite(this.game.canvas.width - 70, 500, "slime");
+        Slime.setScale(4);
+        Slime.play("slimeIdle");
+
         // console.log("Pre load successful");
         console.log("Innnnnn");
 

@@ -22,18 +22,7 @@ export default class MainScene extends Phaser.Scene{
 
     }
 
-    preload = () => {
-        // // set high score -----------------------------------
-        // this.facebook.on("getstats", (data) => {
-        //     console.log("--------------------------------------");
-        //     console.log(data);
-        // });
-        
-        // this.facebook.on("getstatsfail", (error) => {
-        //     console.log("--------------------------------------");
-        //     console.log(error);
-        // });
-        
+    preload = () => {  
         FBInstant.player.getDataAsync(["score"]).then((res) => {
             console.log(res);
             if(res.score != null){
@@ -53,11 +42,9 @@ export default class MainScene extends Phaser.Scene{
     reset = () => {
         this.score = 0;
         this.isGameOver = false;
-        // // start game oparator
-        
-        // this.initBoard();
-        // this.createRandom2or4();
-        // this.updateBoard(); 
+
+        this.timeCountDown = this.timeMax;
+
         this.canPressKey = true;
         this.scene.start("MainScene");
     };
@@ -67,6 +54,16 @@ export default class MainScene extends Phaser.Scene{
         bg.setOrigin(0, 0);
 
         bg.setScale(2);
+
+        this.anims.create({
+            key: "slimeIdle",
+            frames: this.anims.generateFrameNumbers("slime", {}),
+            frameRate: 16,
+            repeat: -1
+        });
+        const Slime = this.add.sprite(this.game.canvas.width - 70, 200, "slime");
+        Slime.setScale(4);
+        Slime.play("slimeIdle");
 
         // const newWidth = this.game.canvas.width;
         // const newHeight = (this.game.canvas.width - bg.width) + bg.height;
